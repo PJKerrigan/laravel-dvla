@@ -8,7 +8,7 @@ grips.
 
 You can install the package via composer:
 ```bash
-composer require kerrigan/laravel-data
+composer require kerrigan/laravel-dvla
 ```
 
 The package will automatically register itself. 
