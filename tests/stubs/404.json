@@ -1,0 +1,10 @@
+{
+  "errors": [
+    {
+      "status": "404",
+      "code": "404",
+      "title": "Vehicle Not Found",
+      "detail": "Record for vehicle not found"
+    }
+  ]
+}

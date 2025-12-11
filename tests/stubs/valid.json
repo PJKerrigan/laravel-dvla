@@ -1,0 +1,18 @@
+{
+  "registrationNumber": "AA01AAA",
+  "taxStatus": "Taxed",
+  "taxDueDate": "2026-09-01",
+  "motStatus": "Valid",
+  "make": "MAZDA",
+  "yearOfManufacture": 2009,
+  "engineCapacity": 2199,
+  "co2Emissions": 194,
+  "fuelType": "PETROL",
+  "markedForExport": false,
+  "colour": "GREEN",
+  "typeApproval": "M1",
+  "dateOfLastV5CIssued": "2022-09-04",
+  "motExpiryDate": "2026-03-25",
+  "wheelplan": "2 AXLE RIGID BODY",
+  "monthOfFirstRegistration": "2009-07"
+}
