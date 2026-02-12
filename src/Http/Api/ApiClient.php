@@ -14,28 +14,30 @@ class ApiClient implements Contract
 {
     public const string VALID_REGEXP = "/(^[A-Z]{2}[0-9]{2}\s?[A-Z]{3}$)|(^[A-Z][0-9]{1,3}[A-Z]{3}$)|(^[A-Z]{3}[0-9]{1,3}[A-Z]$)|(^[0-9]{1,4}[A-Z]{1,2}$)|(^[0-9]{1,3}[A-Z]{1,3}$)|(^[A-Z]{1,2}[0-9]{1,4}$)|(^[A-Z]{1,3}[0-9]{1,3}$)|(^[A-Z]{1,3}[0-9]{1,4}$)|(^[0-9]{3}[DX]{1}[0-9]{3}$)/i";
     public const string VES_URL_PATH = '/v1/vehicles';
-    
+    public const string UNKNOWN_TITLE = 'Unknown';
+    public const string UNKNOWN_DETAIL = 'Unknown error';
+
     public string $apiKey {
         get { return $this->apiKey; }
         set (string $value) {
             $this->apiKey = $value;
         }
     }
-    
+
     public bool $isLive {
         get { return $this->isLive; }
         set (bool $value) {
             $this->isLive = $value;
         }
     }
-    
+
     public ?string $correlationId = null {
         get { return $this->correlationId; }
         set (?string $value) {
             $this->correlationId = $value;
         }
     }
-    
+
     public string $baseUrl {
         get {
             return match ($this->isLive) {
@@ -50,11 +52,11 @@ class ApiClient implements Contract
         $this->isLive = $isLive;
         $this->correlationId = $correlationId;
     }
-    
+
     public function vesLookup(string $registrationNumber): VehicleLookup
     {
         preg_match(self::VALID_REGEXP, $registrationNumber, $matches);
-        
+
         if (empty($matches)) {
             throw new InvalidArgumentException(sprintf(
                 'Registration number `%s` is invalid.',
@@ -74,14 +76,14 @@ class ApiClient implements Contract
 
         if ($response->getStatusCode() !== 200) {
             $errors = json_decode($response->getBody()->getContents(), true);
-            $error = $errors['errors'][0];
+            $error = $errors['errors'][0] ?? [];
 
             throw LookupRequest::failed(
-                code: $error['code'] ?? 'unknown',
-                detail: $error['detail'] ?? 'unknown',
-                registrationNumber: $registrationNumber,
                 status: $response->getStatusCode(),
-                title: $error['title'] ?? 'unknown',
+                detail: $error['detail'] ?? static::UNKNOWN_DETAIL,
+                registrationNumber: $registrationNumber,
+                title: $error['title'] ?? static::UNKNOWN_TITLE,
+                reasonPhrase: $response->getReasonPhrase(),
             );
         }
 
