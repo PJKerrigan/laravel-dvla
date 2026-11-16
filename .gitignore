@@ -30,4 +30,5 @@ Homestead.json
 auth.json
 
 .idea/
+.phpunit.cache/test-results
 .phpunit.cache/
