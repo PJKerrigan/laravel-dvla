@@ -12,7 +12,6 @@ use Kerrigan\Dvla\Contracts\ApiClient as Contract;
 
 class ApiClient implements Contract
 {
-    public const string VALID_REGEXP = "/(^[A-Z]{2}[0-9]{2}\s?[A-Z]{3}$)|(^[A-Z][0-9]{1,3}[A-Z]{3}$)|(^[A-Z]{3}[0-9]{1,3}[A-Z]$)|(^[0-9]{1,4}[A-Z]{1,2}$)|(^[0-9]{1,3}[A-Z]{1,3}$)|(^[A-Z]{1,2}[0-9]{1,4}$)|(^[A-Z]{1,3}[0-9]{1,3}$)|(^[A-Z]{1,3}[0-9]{1,4}$)|(^[0-9]{3}[DX]{1}[0-9]{3}$)/i";
     public const string VES_URL_PATH = '/v1/vehicles';
     public const string UNKNOWN_TITLE = 'Unknown';
     public const string UNKNOWN_DETAIL = 'Unknown error';
@@ -38,33 +37,23 @@ class ApiClient implements Contract
         }
     }
 
-    public string $baseUrl {
-        get {
-            return match ($this->isLive) {
-                true  => 'https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry',
-                false => 'https://uat.driver-vehicle-licensing.api.gov.uk/vehicle-enquiry',
-            };
-        }
-    }
-
     public function __construct(string $apiKey, bool $isLive = false, ?string $correlationId = null) {
         $this->apiKey = $apiKey;
         $this->isLive = $isLive;
         $this->correlationId = $correlationId;
     }
+    
+    public function baseUrl(): string
+    {
+        return match ($this->isLive) {
+            true  => 'https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry',
+            default => 'https://uat.driver-vehicle-licensing.api.gov.uk/vehicle-enquiry',
+        };
+    }
 
     public function vesLookup(string $registrationNumber): VehicleLookup
     {
-        preg_match(self::VALID_REGEXP, $registrationNumber, $matches);
-
-        if (empty($matches)) {
-            throw new InvalidArgumentException(sprintf(
-                'Registration number `%s` is invalid.',
-                $registrationNumber,
-            ));
-        }
-
-        $response = Http::baseUrl($this->baseUrl)
+        $response = Http::baseUrl($this->baseUrl())
             ->withHeaders(array_filter([
                 "x-api-key" => $this->apiKey,
                 'Content-Type' => "application/json",
